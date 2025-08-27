@@ -61,7 +61,7 @@ app.delete("/api/galleries/:id", async (req, res) => {
 // DATABASE CONNECTION
 mongoose
   .connect(DATABASE_URL)
-  .then(() => console.log("Database connected successfully 🚀"))
+  .then(() => console.log("Database connected successfully"))
   .catch((err) => console.log("Failed to connect database:", err));
 
 // SERVER RUNNER
