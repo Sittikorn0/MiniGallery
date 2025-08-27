@@ -19,12 +19,17 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
+          aws-region: us-east-1
+          # ต้องเป็น us-east-1 สำหรับ ECR Public (บังคับโดย AWS)
 
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Log in to Amazon ECR Public
+        run: |
+          aws ecr-public get-login-password \
+            --region us-east-1 | docker login \
+            --username AWS \
+            --password-stdin public.ecr.aws
 
-      - name: Build & Push Docker Image
+      - name: Build & Push Docker Image to ECR Public
         run: |
           cd backend
           docker build -t ${{ secrets.ECR_REPO }}:latest .
