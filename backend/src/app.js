@@ -16,6 +16,17 @@ app.get("/", (req, res) => {
   res.json({ message: "Server is up and running" });
 });
 
+// Load Test APIs
+// Express.js backend (Node)
+app.get("/api/cpu-stress", (req, res) => {
+  const start = Date.now();
+  while (Date.now() - start < 3000) {
+    Math.sqrt(Math.random() * Math.random());
+  }
+  res.send("CPU stressed for 3s");
+});
+
+
 // Gallery APIs
 app.get("/api/galleries", async (req, res) => {
   try {
