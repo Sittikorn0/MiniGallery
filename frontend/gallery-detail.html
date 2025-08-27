@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="image/logo.png" />
+    <title>GalleryDetail - MiniGallery</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/gallery-detail.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo"><a href="index.html">MiniGallery</a></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html" class="active">Gallery</a>
+      </nav>
+    </header>
+
+    <section class="product-detail">
+      <div id="product-detail-content">
+        <!-- Content will be loaded by JavaScript -->
+        <div id="loadingMessage" class="no-result">กำลังโหลดข้อมูล...</div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 MiniShop. All rights reserved.</p>
+    </footer>
+
+    <script>
+      // API URL
+      const API_URL = "https://api.prodspace.online/api/galleries";
+
+      // Wait for the DOM to be fully loaded
+      document.addEventListener("DOMContentLoaded", async () => {
+        const loadingMessage = document.getElementById("loadingMessage");
+        const productDetailContent = document.getElementById(
+          "product-detail-content"
+        );
+
+        // Function to get the item ID from the URL
+        function getItemIdFromUrl() {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get("id");
+        }
+
+        // Function to fetch and display gallery item details
+        async function fetchAndDisplayGalleryItem() {
+          const itemId = getItemIdFromUrl();
+
+          if (!itemId) {
+            loadingMessage.textContent = "ไม่พบ ID รายการ";
+            return;
+          }
+
+          try {
+            const response = await fetch(`${API_URL}/${itemId}`);
+            if (!response.ok) {
+              if (response.status === 404) {
+                loadingMessage.textContent = "ไม่พบข้อมูลรายการนี้";
+              } else {
+                throw new Error("Network response was not ok");
+              }
+              return;
+            }
+            const item = await response.json();
+
+            // Clear the loading message
+            productDetailContent.innerHTML = "";
+
+            const container = document.createElement("div");
+            container.className = "product-detail-container";
+            container.innerHTML = `
+                        <div class="product-image">
+                            <img src="${item.imageUrl}" alt="${
+              item.title
+            }" onerror="this.onerror=null;this.src='https://placehold.co/600x400/b0c4de/ffffff?text=Image+Not+Found';">
+                        </div>
+                        <div class="product-info">
+                            <h2>${item.title}</h2>
+                            <p class="description">${
+                              item.description || "ไม่มีคำอธิบาย"
+                            }</p>
+                        </div>
+                    `;
+            productDetailContent.appendChild(container);
+          } catch (error) {
+            console.error("Failed to fetch gallery item:", error);
+            loadingMessage.textContent = "ไม่สามารถโหลดข้อมูลได้";
+          }
+        }
+
+        // Call the function when the page loads
+        fetchAndDisplayGalleryItem();
+      });
+    </script>
+  </body>
+</html>

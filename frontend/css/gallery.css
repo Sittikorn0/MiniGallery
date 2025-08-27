@@ -1,0 +1,381 @@
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  background-color: #f9fbff;
+  color: #023047;
+}
+
+header {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #219ebc;
+  text-decoration: none;
+}
+
+nav a {
+  margin-left: 1.5rem;
+  color: #023047;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #219ebc;
+}
+
+.btn-login {
+  background-color: #219ebc;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 5px;
+  margin-left: 1.5rem;
+}
+
+.search-bar {
+  background-color: #e9ecef;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+}
+
+.search-form input[type="text"] {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.search-form button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #495057;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.product-container {
+  display: flex;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  color: #219ebc;
+  border-bottom: 2px solid #219ebc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-list li {
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.category-list li:hover {
+  background-color: #f0f3f6;
+}
+
+.category-list li.active {
+  background-color: #219ebc;
+  color: white;
+  font-weight: bold;
+}
+
+.product-section {
+  flex-grow: 1;
+}
+
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.gallery-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: #023047;
+}
+
+.btn-add-item {
+  padding: 10px 20px;
+  background-color: #219ebc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-item:hover {
+  background-color: #1a7e93;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.product-card h3 {
+  font-size: 1.25rem;
+  margin: 0.5rem 0;
+  color: #023047;
+}
+
+.product-card p {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  background-color: #219ebc;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 16px;
+}
+
+.btn-sm-delete {
+  background-color: #dc3545;
+}
+
+.btn-sm:hover {
+  background-color: #1a7e93;
+}
+
+.btn-sm-delete:hover {
+  background-color: #c82333;
+}
+
+.no-result {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.2rem;
+  padding: 2rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #e9ecef;
+  color: #495057;
+  margin-top: 2rem;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* ซ่อนไว้เป็นค่าเริ่มต้น */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6); /* ฉากหลังทึบแสง */
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 550px;
+  position: relative;
+}
+
+.modal-confirm {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-confirm-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.confirm-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+#confirmDeleteBtn {
+  background-color: #dc3545;
+  color: white;
+}
+
+#cancelDeleteBtn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.close-btn {
+  color: #aaa;
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #023047;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  box-sizing: border-box; /* ทำให้ padding ไม่เพิ่มความกว้าง */
+  font-size: 1rem;
+}
+
+.required {
+  color: red;
+}
+
+.btn-submit {
+  background-color: #219ebc;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+  background-color: #1a7e93;
+}
+
+.active {
+  color: #219ebc;
+  font-weight: 600;
+}

@@ -1,0 +1,133 @@
+/* index.css */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background-color: #f9fbff;
+  color: #023047;
+}
+
+header {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #219ebc;
+  text-decoration: none;
+}
+
+.active {
+  color: #219ebc;
+  font-weight: 600;
+}
+
+nav a {
+  margin-left: 1.5rem;
+  color: #023047;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #219ebc;
+}
+
+.btn-login {
+  background-color: #219ebc;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 5px;
+  margin-left: 1.5rem;
+}
+
+.btn-login:hover{
+  color: #79e9ff;
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(to right, #dbeeff, #f1f9ff);
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+}
+
+.btn-sm {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background-color: #8ecae6;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.btn-sm:hover {
+  color: #daf3ff;
+}
+
+.gallery {
+  padding: 2rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-card {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-card h4 {
+  color: #023047;
+  opacity: 0.651;
+}
+
+.gallery-card img {
+  width: 80%;
+  height: 430px;       /* หรือปรับตามต้องการ เช่น 180px */
+  object-fit: cover;   /* ครอบภาพให้เต็มกรอบ โดยไม่เสียสัดส่วน */
+  border-radius: 8px;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f1f9ff;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .category-grid,
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}

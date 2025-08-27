@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="image/logo.png" />
+    <title>Gallery - MiniGallery</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/gallery.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo"><a href="index.html">MiniGallery</a></div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="gallery.html" class="active">Gallery</a>
+      </nav>
+    </header>
+
+    <div class="search-bar">
+      <form class="search-form" onsubmit="return false;">
+        <input type="text" id="searchInput" placeholder="Search Gallery..." />
+        <button type="submit" id="searchBtn">Search</button>
+        <button type="button" id="clearBtn">Clear</button>
+      </form>
+    </div>
+
+    <div class="product-container">
+      <aside class="sidebar">
+        <h3>Category</h3>
+        <ul class="category-list">
+          <!-- All category will be added by JavaScript to avoid duplication -->
+        </ul>
+      </aside>
+
+      <section class="product-section">
+        <div class="gallery-header">
+          <h2>Gallery</h2>
+          <button class="btn-add-item" id="addBtn">Add Item</button>
+        </div>
+
+        <div class="product-grid">
+          <div id="loadingMessage" class="no-result">กำลังโหลดข้อมูล...</div>
+          <div id="noResultMessage" class="no-result" style="display: none">
+            ไม่พบข้อมูล
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 MiniShop. All rights reserved.</p>
+    </footer>
+
+    <div id="addItemModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" id="closeAddModal">&times;</span>
+        <h3>Add New Gallery Item</h3>
+        <form id="addItemForm">
+          <div class="form-group">
+            <label for="itemTitle"
+              >Title: <span class="required">*</span></label
+            >
+            <input type="text" id="itemTitle" required />
+          </div>
+          <div class="form-group">
+            <label for="itemCategory">Category:</label>
+            <input type="text" id="itemCategory" />
+          </div>
+          <div class="form-group">
+            <label for="itemDescription">Description:</label>
+            <textarea id="itemDescription"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="itemImageUrl"
+              >Image URL: <span class="required">*</span></label
+            >
+            <input type="url" id="itemImageUrl" required />
+          </div>
+          <button type="submit" class="btn-submit">Add Item</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="confirmModal" class="modal-confirm">
+      <div class="modal-confirm-content">
+        <p>คุณต้องการลบรายการนี้ใช่หรือไม่?</p>
+        <div class="confirm-buttons">
+          <button id="confirmDeleteBtn">ใช่, ลบเลย</button>
+          <button id="cancelDeleteBtn">ยกเลิก</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // กำหนด URL API และตัวแปรสำหรับเก็บข้อมูล
+      const API_URL = "https://api.prodspace.online/api/galleries";
+      let allGalleries = [];
+      let itemToDeleteId = null; // ตัวแปรสำหรับเก็บ ID ของรายการที่ต้องการลบ
+
+      // รอให้ DOM โหลดเสร็จก่อนเริ่มทำงาน
+      document.addEventListener("DOMContentLoaded", () => {
+        // ดึง Element ที่จำเป็น
+        const loadingMessage = document.getElementById("loadingMessage");
+        const noResultMessage = document.getElementById("noResultMessage");
+        const productGrid = document.querySelector(".product-grid");
+        const addItemModal = document.getElementById("addItemModal");
+        const confirmModal = document.getElementById("confirmModal");
+        const addBtn = document.getElementById("addBtn");
+        const closeAddModalBtn = document.getElementById("closeAddModal");
+        const searchBtn = document.getElementById("searchBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const searchInput = document.getElementById("searchInput");
+        const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+        const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+
+        // เรียกใช้ฟังก์ชันหลักเมื่อโหลดหน้า
+        fetchGalleries();
+        setupAddItemForm();
+
+        // เพิ่ม Event Listener สำหรับปุ่ม 'Add Item'
+        addBtn.addEventListener("click", showAddItemModal);
+
+        // เพิ่ม Event Listener สำหรับปุ่มปิด Modal
+        closeAddModalBtn.addEventListener("click", hideAddItemModal);
+
+        // เพิ่ม Event Listener สำหรับฟังก์ชันค้นหาและล้าง
+        searchBtn.addEventListener("click", searchGallery);
+        clearBtn.addEventListener("click", clearSearch);
+
+        // เพิ่ม Event Listener สำหรับการยืนยันการลบ
+        confirmDeleteBtn.addEventListener("click", () => {
+          if (itemToDeleteId) {
+            deleteGalleryItem(itemToDeleteId);
+          }
+          hideConfirmModal();
+        });
+
+        // เพิ่ม Event Listener สำหรับการยกเลิกการลบ
+        cancelDeleteBtn.addEventListener("click", () => {
+          itemToDeleteId = null;
+          hideConfirmModal();
+        });
+
+        // ให้ฟอร์มค้นหาทำงานเมื่อกด Enter
+        document
+          .querySelector(".search-form")
+          .addEventListener("submit", (e) => {
+            e.preventDefault();
+            searchGallery();
+          });
+
+        // ฟังก์ชันสำหรับดึงข้อมูลแกลเลอรี่จาก API
+        async function fetchGalleries() {
+          loadingMessage.style.display = "block";
+
+          try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            const galleries = await response.json();
+            allGalleries = galleries;
+
+            displayGalleries(allGalleries);
+            setupCategoryFilter();
+
+            loadingMessage.style.display = "none";
+          } catch (error) {
+            console.error("Failed to fetch galleries:", error);
+            loadingMessage.textContent = "ไม่สามารถโหลดข้อมูลได้";
+          }
+        }
+
+        // ฟังก์ชันสำหรับแสดงผลข้อมูลแกลเลอรี่
+        function displayGalleries(galleries) {
+          productGrid.innerHTML = "";
+
+          if (galleries.length === 0) {
+            noResultMessage.style.display = "block";
+          } else {
+            noResultMessage.style.display = "none";
+          }
+
+          galleries.forEach((gallery) => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.setAttribute("data-category", gallery.category);
+
+            // จัดรูปแบบวันที่ตาม Local
+            let formattedDate = "";
+            if (gallery.createdAt) {
+              try {
+                const dateObj = new Date(gallery.createdAt);
+                formattedDate = dateObj.toLocaleDateString();
+              } catch (e) {
+                formattedDate = gallery.createdAt; // ใช้ค่าเดิมหากเกิดข้อผิดพลาดในการจัดรูปแบบ
+                console.error("Error formatting date:", e);
+              }
+            }
+
+            card.innerHTML = `
+                        <img src="${gallery.imageUrl}" alt="${gallery.title}">
+                        <h3>${gallery.title}</h3>
+                        <p>${formattedDate}</p>
+                        <div class="card-actions">
+                            <a href="gallery-detail.html?id=${gallery._id}" class="btn-sm">Detail</a>
+                            <button class="btn-sm btn-sm-delete" data-id="${gallery._id}">Delete</button>
+                        </div>
+                    `;
+            productGrid.appendChild(card);
+          });
+
+          // เพิ่ม Event Listener สำหรับปุ่มลบ
+          document.querySelectorAll(".btn-sm-delete").forEach((button) => {
+            button.addEventListener("click", (e) => {
+              const id = e.target.getAttribute("data-id");
+              itemToDeleteId = id;
+              showConfirmModal();
+            });
+          });
+        }
+
+        // ฟังก์ชันสำหรับลบรายการ
+        async function deleteGalleryItem(id) {
+          try {
+            const response = await fetch(`${API_URL}/${id}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to delete item");
+            }
+
+            console.log("ลบข้อมูลสำเร็จ!");
+            fetchGalleries(); // โหลดข้อมูลใหม่หลังจากลบสำเร็จ
+          } catch (error) {
+            console.error("Error deleting item:", error);
+          }
+        }
+
+        // ฟังก์ชันสำหรับค้นหาแกลเลอรี่
+        function searchGallery() {
+          const searchTerm = searchInput.value.toLowerCase();
+          const filtered = allGalleries.filter(
+            (gallery) =>
+              gallery.title.toLowerCase().includes(searchTerm) ||
+              (gallery.category &&
+                gallery.category.toLowerCase().includes(searchTerm)) ||
+              (gallery.description &&
+                gallery.description.toLowerCase().includes(searchTerm))
+          );
+          displayGalleries(filtered);
+        }
+
+        // ฟังก์ชันสำหรับล้างการค้นหา
+        function clearSearch() {
+          searchInput.value = "";
+          displayGalleries(allGalleries);
+        }
+
+        // ฟังก์ชันสำหรับจัดการการกรองตาม Category
+        function setupCategoryFilter() {
+          const categoryList = document.querySelector(".category-list");
+          categoryList.innerHTML = ""; // ล้างรายการที่มีอยู่ทั้งหมด
+
+          // สร้างและเพิ่ม "All" เป็นรายการแรก
+          const allLi = document.createElement("li");
+          allLi.textContent = "All";
+          allLi.setAttribute("data-category", "All");
+          allLi.classList.add("active");
+          categoryList.appendChild(allLi);
+
+          // สร้างรายการหมวดหมู่ที่ไม่ซ้ำกันจากข้อมูลและกรอง 'All' ออก
+          const categories = [
+            ...new Set(allGalleries.map((g) => g.category).filter(Boolean)),
+          ];
+
+          categories.forEach((category) => {
+            // เพิ่มเงื่อนไขเพื่อไม่ให้สร้างหมวดหมู่ "All" ซ้ำ
+            if (category.toLowerCase() !== "all") {
+              const li = document.createElement("li");
+              li.textContent = category;
+              li.setAttribute("data-category", category);
+              categoryList.appendChild(li);
+            }
+          });
+
+          categoryList.addEventListener("click", (e) => {
+            const target = e.target;
+            if (target.tagName === "LI") {
+              const selectedCategory = target.getAttribute("data-category");
+              const allListItems = categoryList.querySelectorAll("li");
+              allListItems.forEach((item) => item.classList.remove("active"));
+              target.classList.add("active");
+
+              if (selectedCategory === "All") {
+                displayGalleries(allGalleries);
+              } else {
+                const filtered = allGalleries.filter(
+                  (g) => g.category === selectedCategory
+                );
+                displayGalleries(filtered);
+              }
+            }
+          });
+        }
+
+        // ฟังก์ชันสำหรับแสดง Modal เพิ่มข้อมูล
+        function showAddItemModal() {
+          addItemModal.style.display = "flex";
+        }
+
+        // ฟังก์ชันสำหรับซ่อน Modal เพิ่มข้อมูล
+        function hideAddItemModal() {
+          addItemModal.style.display = "none";
+        }
+
+        // ฟังก์ชันสำหรับแสดง Modal ยืนยันการลบ
+        function showConfirmModal() {
+          confirmModal.style.display = "flex";
+        }
+
+        // ฟังก์ชันสำหรับซ่อน Modal ยืนยันการลบ
+        function hideConfirmModal() {
+          confirmModal.style.display = "none";
+        }
+
+        // ปิด modal เมื่อคลิกนอกพื้นที่
+        window.onclick = function (event) {
+          if (event.target == addItemModal) {
+            hideAddItemModal();
+          } else if (event.target == confirmModal) {
+            itemToDeleteId = null;
+            hideConfirmModal();
+          }
+        };
+
+        // ฟังก์ชันสำหรับจัดการ Form การเพิ่มข้อมูล
+        function setupAddItemForm() {
+          const form = document.getElementById("addItemForm");
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const newItem = {
+              title: document.getElementById("itemTitle").value,
+              category: document.getElementById("itemCategory").value,
+              description: document.getElementById("itemDescription").value,
+              imageUrl: document.getElementById("itemImageUrl").value,
+            };
+
+            try {
+              const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newItem),
+              });
+
+              if (!response.ok) {
+                throw new Error("Failed to add new item");
+              }
+
+              console.log("เพิ่มข้อมูลสำเร็จ!");
+              form.reset();
+              hideAddItemModal();
+              fetchGalleries();
+            } catch (error) {
+              console.error("Error adding item:", error);
+              console.error("เกิดข้อผิดพลาดในการเพิ่มข้อมูล");
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
