@@ -1,12 +1,12 @@
 {
-  "family": "mini-gallery-backend-task",
+  "family": "mini-gallery-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
   "containerDefinitions": [
     {
-      "name": "backend-container",
+      "name": "mini-gallery-container",
       "image": "public.ecr.aws/g9k8y8q1/mini-gallery-backend:latest",
       "portMappings": [
         {
