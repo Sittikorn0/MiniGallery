@@ -20,10 +20,10 @@ app.get("/", (req, res) => {
 // Express.js backend (Node)
 app.get("/api/cpu-stress", (req, res) => {
   const start = Date.now();
-  while (Date.now() - start < 3000) {
+  while (Date.now() - start < 500) {
     Math.sqrt(Math.random() * Math.random());
   }
-  res.send("CPU stressed for 3s");
+  res.send("CPU stressed for 0.5s");
 });
 
 
