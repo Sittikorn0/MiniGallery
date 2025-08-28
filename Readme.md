@@ -72,7 +72,7 @@ ECS → CloudWatch (Logs, Metrics)
 
 ## 📊 Monitoring & Scaling
 - **Logs**: ECS → CloudWatch  
-- **Auto Scaling**: ECS Service ปรับตาม CPU Utilization (CPU > 60%)  
+- **Auto Scaling**: ECS Service ปรับตาม CPU Utilization (AverageCPU > 60%)  
 - **Load Test**: ใช้ k6 สำหรับจำลองผู้ใช้งานจำนวนมาก  
 
 ---
